@@ -1,0 +1,10 @@
+#Kafka
+bin/
+logs/
+libs/
+security/
+site-docs/
+LICENCE
+NOTICE
+licenses/
+#Security
