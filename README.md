@@ -13,4 +13,3 @@ $ bin/kafka-storage.sh format --standalone -t $KAFKA_CLUSTER_ID -c config/server
 - Start the Kafka Server
 
 $ bin/kafka-server-start.sh config/server.properties
-
