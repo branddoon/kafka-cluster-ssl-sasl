@@ -13,3 +13,7 @@ $ bin/kafka-storage.sh format --standalone -t $KAFKA_CLUSTER_ID -c config/server
 - Start the Kafka Server
 
 $ bin/kafka-server-start.sh config/server.properties
+
+### 
+
+export KAFKA_OPTS="-Djava.security.auth.login.config=$HOME/documents/kafka-ssl-sasl/cluster-real/kafka_2.13-4.1.1/config/kafka_server_jaas.conf"
