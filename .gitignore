@@ -2,7 +2,7 @@
 bin/
 logs/
 libs/
-security/
+security/ssl/
 site-docs/
 LICENCE
 NOTICE
