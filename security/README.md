@@ -1,79 +1,79 @@
---- #SSL PROCESS FOR KAFKA SERVER
+# SSL PROCESS FOR KAFKA SERVER
 
-###CA Certified Authority
+### CA Certified Authority
 openssl req -new -newkey rsa:4096 -days 365 -x509 -subj "/CN=Kafka-Security-CA" -keyout ca-key -out ca-cert -nodes
 
-###Keystore | KAFKA BROKER
+### Keystore | KAFKA BROKER
 keytool -genkey -keystore kafka.broker.keystore.jks -validity 365 -storepass password -keypass password -dname "CN=172.26.25.56" -storetype pkcs12 -keyalg RSA
 
-###CSR Certificate Signing Request | KAFKA BROKER
+### CSR Certificate Signing Request | KAFKA BROKER
 keytool -keystore kafka.broker.keystore.jks -certreq -file cert-file -storepass password -keypass password
 
-###Cert signed | KAFKA BROKER
+### Cert signed | KAFKA BROKER
 openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file -out cert-signed -days 365 -CAcreateserial -extfile san.cnf -extensions v3_req -passin pass:password 
 
-###Import CA public and Cert signed | KAFKA BROKER
+### Import CA public and Cert signed | KAFKA BROKER
 keytool -keystore kafka.broker.keystore.jks -alias CARoot -import -file ca-cert -storepass password -keypass password -noprompt
 keytool -keystore kafka.broker.keystore.jks -import -file cert-signed -storepass password -keypass password -noprompt
  
-###Trustore | KAFKA BROKER
+### Trustore | KAFKA BROKER
 keytool -keystore kafka.broker.truststore.jks -alias CARoot -import -file ca-cert -storepass password -keypass password -noprompt
 
---- #SSL PROCESS FOR KAFKA CLIENT
+# SSL PROCESS FOR KAFKA CLIENT
 
-#Trustore | KAFKA CLIENT
+# Trustore | KAFKA CLIENT
 keytool -keystore kafka.client.truststore.jks -alias CARoot -import -file ca-cert -storepass password -keypass password -noprompt
 
-#keystore | KAFKA CLIENT
+# keystore | KAFKA CLIENT
 keytool -genkey -keystore kafka.client.keystore.jks -validity 365 -storepass password -keypass password -dname "CN=172.26.25.56" -storetype pkcs12 -keyalg RSA
 
-#CSR Certificate Signing Request  | KAFKA CLIENT
+# CSR Certificate Signing Request  | KAFKA CLIENT
 keytool -keystore kafka.client.keystore.jks -certreq -file cert-file-client -storepass password -keypass password
 
-#Cert signed | KAFKA CLIENT
+# Cert signed | KAFKA CLIENT
 openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file-client -out cert-signed-client -days 365 -CAcreateserial -extfile san-client.cnf -extensions v3_req -passin pass:password 
 
-#Import CA public and Cert signed | KAFKA CLIENT
+# Import CA public and Cert signed | KAFKA CLIENT
 keytool -keystore kafka.client.keystore.jks -alias CARoot -import -file ca-cert -storepass password -keypass password -noprompt
 keytool -keystore kafka.client.keystore.jks -import -file cert-signed-client -storepass password -keypass password -noprompt
 
---- #COMANDS CONSUMER/PRODUCER SSL
+# COMANDS CONSUMER/PRODUCER SSL
 
-###Consumer
+### Consumer
 sh bin/kafka-console-consumer.sh --topic topic2 --from-beginning --bootstrap-server 172.26.25.56:9093 --consumer.config config/client.properties
 
-###Producer
+### Producer
 sh bin/kafka-console-producer.sh --topic topic2 --bootstrap-server 172.26.25.56:9093 -producer.config config/client.properties
 
---- #COMMANDS FOR KAFKA SERVER | SSL
+# COMMANDS FOR KAFKA SERVER | SSL
 
-###Start zookeper
+### Start zookeper
 sudo bin/zookeeper-server-start.sh config/zookeeper.properties
 
-###Start kafka server 
+### Start kafka server 
 sudo bin/kafka-server-start.sh config/server.properties
 
---- #COMANDS CONSUMER/PRODUCER SASL
+# COMANDS CONSUMER/PRODUCER SASL
 
-###Consumer
+### Consumer
 sh bin/kafka-console-consumer.sh --topic topic2 --from-beginning --bootstrap-server 172.26.25.56:9095 --consumer.config config/client_kerberos.properties
 
---- #COMANDS FOR KAFKA SERVER | PLAINTEXT
+# COMANDS FOR KAFKA SERVER | PLAINTEXT
 
-###Consumer
+### Consumer
 sh bin/kafka-console-consumer.sh --topic mi-topic --from-beginning --bootstrap-server 172.26.25.56:9092
 
-###Producer
+### Producer
 sh bin/kafka-console-producer.sh --topic mi-topic --bootstrap-server 172.26.25.56:9092
 
-###Describe topics 
+### Describe topics 
 
 sh bin/kafka-topics.sh --describe --topic mi-topic --bootstrap-server localhost:9092
 
-###Describe group
+### Describe group
 sh bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group mi-grupo-spring
 
-###Increase partitions 
+### Increase partitions 
 
 sh bin/kafka-topics.sh --bootstrap-server localhost:9092 \
   --alter --topic mi-topic \
