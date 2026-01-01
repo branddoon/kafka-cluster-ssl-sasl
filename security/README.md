@@ -21,19 +21,19 @@ keytool -keystore kafka.broker.truststore.jks -alias CARoot -import -file ca-cer
 
 # SSL PROCESS FOR KAFKA CLIENT
 
-# Trustore | KAFKA CLIENT
+### Trustore | KAFKA CLIENT
 keytool -keystore kafka.client.truststore.jks -alias CARoot -import -file ca-cert -storepass password -keypass password -noprompt
 
-# keystore | KAFKA CLIENT
+### keystore | KAFKA CLIENT
 keytool -genkey -keystore kafka.client.keystore.jks -validity 365 -storepass password -keypass password -dname "CN=172.26.25.56" -storetype pkcs12 -keyalg RSA
 
-# CSR Certificate Signing Request  | KAFKA CLIENT
+### CSR Certificate Signing Request  | KAFKA CLIENT
 keytool -keystore kafka.client.keystore.jks -certreq -file cert-file-client -storepass password -keypass password
 
-# Cert signed | KAFKA CLIENT
+### Cert signed | KAFKA CLIENT
 openssl x509 -req -CA ca-cert -CAkey ca-key -in cert-file-client -out cert-signed-client -days 365 -CAcreateserial -extfile san-client.cnf -extensions v3_req -passin pass:password 
 
-# Import CA public and Cert signed | KAFKA CLIENT
+### Import CA public and Cert signed | KAFKA CLIENT
 keytool -keystore kafka.client.keystore.jks -alias CARoot -import -file ca-cert -storepass password -keypass password -noprompt
 keytool -keystore kafka.client.keystore.jks -import -file cert-signed-client -storepass password -keypass password -noprompt
 
