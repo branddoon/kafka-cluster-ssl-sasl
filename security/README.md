@@ -56,7 +56,10 @@ sudo bin/kafka-server-start.sh config/server.properties
 # COMANDS CONSUMER/PRODUCER SASL
 
 ### Consumer
-sh bin/kafka-console-consumer.sh --topic topic2 --from-beginning --bootstrap-server 172.26.25.56:9095 --consumer.config config/client_kerberos.properties
+sh bin/kafka-console-consumer.sh --topic topic2 --from-beginning --bootstrap-server 172.26.25.56:9095 --consumer.config config/client_reader_kerberos.properties
+
+### Producer
+sh bin/kafka-console-producer.sh --topic topic2 --bootstrap-server 172.26.25.56:9095 -producer.config config/client_writer_kerberos.properties
 
 # COMANDS FOR KAFKA SERVER | PLAINTEXT
 
@@ -79,3 +82,24 @@ sh bin/kafka-topics.sh --bootstrap-server localhost:9092 \
   --alter --topic mi-topic \
   --partitions 3
 
+# ACL 
+
+### Create ACL CONSUMER
+bin/kafka-acls.sh \
+  --bootstrap-server 172.26.25.56:9095 \
+  --command-config config/admin_client_kerberos.properties \
+  --add \
+  --allow-principal "User:reader" \
+  --operation Read \
+  --operation Describe \
+  --topic topic2
+
+### Create ACL PRODUCER
+bin/kafka-acls.sh \
+  --bootstrap-server 172.26.25.56:9095 \
+  --command-config config/admin_client_kerberos.properties \
+  --add \
+  --allow-principal "User:writer" \
+  --operation Write \
+  --operation Describe \
+  --topic topic2
